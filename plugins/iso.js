@@ -16,7 +16,7 @@ class ISO {
 	}
 
 	startSession() {
-		this.sendRoom(`ISO session started`);
+		this.sendRoom(`Isolation session started`);
 		this.enabled = true;
 		this.startTime = Date.now();
 		this.authors = [];
@@ -25,7 +25,7 @@ class ISO {
 	}
 
 	endSession() {
-		this.sendRoom(`ISO session ended. ${this.authors.length} messages recorded`);
+		if (this.enabled) this.sendRoom(`Isolation session ended. ${this.authors.length} messages recorded`);
 		this.enabled = false;
 	}
 
@@ -104,7 +104,7 @@ exports.commands = {
 	enableiso: function (target, room) {
 		if (!this.can('roommanagement')) return false;
 		if (!room) return;
-		if (room.iso) return this.reply(`ISO already exists`);
+		if (room.iso) return this.reply(`An isolation session already exists`);
 		room.iso = new ISO(room.roomid);
 		this.reply('Listener created');
 	},
@@ -119,7 +119,9 @@ exports.commands = {
 		if (!this.can('games')) return;
 		room.iso.endSession();
 	},
-	iso: function (target, room, user) {
+	i: 'isolate',
+	isolation: 'isolate',
+	isolate: function (target, room, user) {
 		target = target.split(',').map(s => s.trim());
 		let replyInRoom = this.can('broadcast');
 		if (!room) {
@@ -151,7 +153,7 @@ exports.commands = {
 			}
 		}
 		delete foundNames['~'];
-		if (!Object.keys(foundNames).length) return this.reply(`No ISO found`);
+		if (!Object.keys(foundNames).length) return this.reply(`No isolation session found`);
 		const countLine = `ISO for ${Object.entries(foundNames).reduce((acc, [a, n]) => {
 			if (a === '~') return acc;
 			acc.push(`${a}: ${n} lines`);
